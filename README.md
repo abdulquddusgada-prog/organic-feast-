@@ -33,3 +33,10 @@ Organic Feast is a web-based organic food ordering platform developed using Djan
 git clone https://github.com/abdulquddusgada-prog/organic-feast-.git
 cd organic-feast-
 python manage.py runserver
+# 📸 Screenshots
+
+![Home](screenshots/home.png)
+
+![Cart](screenshots/cart.png)
+
+![Login](screenshots/login.png)
