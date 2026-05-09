@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+    <title>Bootstrap demo</title>
+  </head>
+    <body>
+
+        <div class="container-fluid">
+        <!-- outer start -->
+
+        {% include "navbar.html" %}
+
+
+            <!-- slider start -->
+            <div class="row mt-3">
+                <p>Welcome to Organica Feast, where purity meets taste!
+
+                  Founded in 2026 by Abdul Quddus, our journey began out of a passion for healthy eating and a deep respect for the environment. Disappointed by the lack of genuine organic options in the market, Abdul Quddus set out to create a space where people could find truly natural, wholesome foods that didn’t just taste good, but also made them feel great.
+                  
+                  
+                <p>Our Mission
+                  At Organica Feast, we are committed to revolutionizing the way people think about food. Our mission is to provide our customers with the highest quality organic products that are not only sustainable but also nurture both the body and the planet.
+                  
+                  </p>
+            </div>
+            <!-- slider end -->
+
+
+
+            <!-- section start -->
+            <div class="row mt-3">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          Our Values
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+<p>We believe in transparency, sustainability, and ethical sourcing. Each product on our shelves is 100% organic, certified by FDA, and has been chosen with care from trusted local farmers and suppliers who share our values. We prioritize non-GMO, pesticide-free products, ensuring that you and your family enjoy food that is as clean as it is delicious.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          Why Choose Us?
+
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+<p>Our commitment goes beyond just selling food. We aim to create a community of conscious consumers who are passionate about making informed choices. We provide detailed information about where and how our foods are grown and offer tips on how to use them to benefit your health.
+
+</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          Join Our Community
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <p>Explore our website to check out our latest products, learn more about organic living, and get inspired with recipes that are as good for you as they are for the Earth. Don’t forget to sign up for our newsletter for updates, or connect with us on Social Media to be part of our growing family of eco-conscious food lovers.
+
+                            Together, let's make a difference—one bite at a time!
+                            
+                            </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+            <!-- section end -->
+
+
+
+            <!-- product start -->
+            
+                
+               
+
+            <div class="row mt-5">
+                
+               
+            
+                
+            </div>
+            <!-- product end -->
+
+
+            {% include 'footer.html' %}
+
+        
+        <!-- outer end -->
+        </div>
+  
+    </body>
+</html>

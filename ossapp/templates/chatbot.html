@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Product Assistant{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12 col-lg-8 offset-lg-2">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Product Assistant</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Ask me anything about this store, products, orders, or how to use the site. I'm here to help with all your questions!</p>
+
+                <div id="chat-window" class="border rounded p-3 mb-3" style="min-height: 320px; max-height: 420px; overflow-y: auto; background-color: #f8f9fa;">
+                    <div class="chat-message bot-message mb-3">
+                        <strong>Assistant:</strong>
+                        <div>Hi! I can help with products, orders, registration, delivery, and more. Try asking: "How do I register?", "What products do you have?", or "How to place an order?"</div>
+                        <div class="text-muted mt-2" id="available-products"></div>
+                    </div>
+                </div>
+
+                <form id="chat-form" class="d-flex" autocomplete="off">
+                    <input id="chat-input" type="text" class="form-control me-2" placeholder="Ask anything about the store or products..." aria-label="Chat question">
+                    <button type="submit" class="btn btn-success">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const productData = JSON.parse('{{ product_data_json|escapejs }}');
+const chatWindow = document.getElementById('chat-window');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const availableProducts = document.getElementById('available-products');
+
+function appendMessage(content, sender) {
+    const wrapper = document.createElement('div');
+    wrapper.className = sender === 'user' ? 'text-end mb-3' : 'text-start mb-3';
+    const bubble = document.createElement('div');
+    bubble.className = sender === 'user' ? 'badge bg-success text-start p-3' : 'badge bg-light text-dark p-3';
+    bubble.style.width = '100%';
+    bubble.style.display = 'inline-block';
+    bubble.innerHTML = content;
+    wrapper.appendChild(bubble);
+    chatWindow.appendChild(wrapper);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function formatProductNames() {
+    if (productData.length === 0) {
+        return 'No products are available to describe yet.';
+    }
+    return 'Available products: ' + productData.map(p => p.name).join(', ') + '.';
+}
+
+const healthGuidance = {
+    tea: 'Tea is best enjoyed in the morning or early afternoon. Avoid strong tea late in the evening if you want to sleep well, and choose herbal or green tea for a gentler, more organic-friendly option.',
+    ghee: 'Ghee is traditionally consumed in moderation. It can be used in cooking or added to warm drinks, and is often recommended in the morning or with meals for energy and digestion support.',
+    sugar: 'Sugar should be used sparingly. For a healthier choice, prefer natural sweeteners or reduce sweet intake and balance it with fruits and organic alternatives.',
+    honey: 'Honey is best used in moderation, ideally in warm water, tea, or as a natural sweetener after meals. It is more organic-friendly than processed sugar when sourced from a clean supplier.',
+    milk: 'Milk can be good after breakfast or with snacks, especially if it is organic or low-fat. Avoid drinking large amounts right before bed if digestion is a concern.',
+    coffee: 'Coffee can be enjoyed in the morning or early afternoon. Try not to drink it late in the day to prevent sleep issues, and choose lighter roasts or organic beans when possible.',
+};
+
+function findMatchingProduct(message) {
+    const lower = message.toLowerCase();
+    let found = productData.find(product => lower.includes(product.name.toLowerCase()));
+    if (found) {
+        return found;
+    }
+
+    // Also try to match by words if there is no exact includes match
+    const words = lower.split(/\W+/).filter(Boolean);
+    for (const product of productData) {
+        const nameWords = product.name.toLowerCase().split(/\W+/).filter(Boolean);
+        if (nameWords.some(word => words.includes(word))) {
+            return product;
+        }
+    }
+    return null;
+}
+
+function findHealthGuide(message) {
+    const lower = message.toLowerCase();
+    for (const key of Object.keys(healthGuidance)) {
+        if (lower.includes(key)) {
+            return healthGuidance[key];
+        }
+    }
+    return null;
+}
+
+function findRelatedProducts(product) {
+    return productData.filter(p => p.category === product.category && p.name !== product.name).slice(0, 3);
+}
+
+function getGeneralSuggestions() {
+    if (productData.length === 0) {
+        return 'I do not have product details yet, but you can add products to the store and then ask about them.';
+    }
+    const firstProducts = productData.slice(0, 4).map(p => `<strong>${p.name}</strong> (${p.category})`).join(', ');
+    return `Here are some suggestion starters from this project: ${firstProducts}. Ask about any one of them to learn more.`;
+}
+
+function getBotResponse(message) {
+    const text = message.trim();
+    const lower = text.toLowerCase();
+    const product = findMatchingProduct(lower);
+    const healthTip = findHealthGuide(lower);
+
+    if (!text) {
+        return 'Please type a question so I can help you.';
+    }
+
+    const wantsSuggestion = lower.includes('suggest') || lower.includes('recommend') || lower.includes('best') || lower.includes('better');
+    const asksOrganic = lower.includes('organic') || lower.includes('natural') || lower.includes('chemical');
+    const asksUse = lower.includes('use') || lower.includes('what') || lower.includes('does') || lower.includes('for');
+    const asksTime = lower.includes('time') || lower.includes('morning') || lower.includes('evening') || lower.includes('when') || lower.includes('deliver');
+    const asksPrice = lower.includes('price') || lower.includes('cost') || lower.includes('charge');
+    const asksQuantity = lower.includes('quantity') || lower.includes('qty') || lower.includes('how many') || lower.includes('number of');
+
+    // Registration and Login
+    if (lower.includes('register') || lower.includes('signup') || lower.includes('sign up')) {
+        return 'To register, click the "Register" link in the navbar. Fill in your name, email, password, address, pincode, and phone number. You will be able to log in after registration.';
+    }
+    if (lower.includes('login') || lower.includes('sign in') || lower.includes('log in')) {
+        return 'To log in, click the "Login" dropdown in the navbar and choose Customer, Owner, or Delivery Boy. Use your email and password.';
+    }
+
+    // Shopping Cart and Orders
+    if (lower.includes('cart') || lower.includes('add to cart')) {
+        return 'To add items to your cart, browse products and click "Add to Cart". You must be logged in. View your cart by clicking the cart icon in the navbar.';
+    }
+    if (lower.includes('checkout') || lower.includes('buy') || lower.includes('purchase') || lower.includes('order')) {
+        return 'To place an order, add items to your cart, then go to your cart and click "Buy Now". Fill in your details and confirm. Orders are processed within 3-5 business days.';
+    }
+    if (lower.includes('my orders') || lower.includes('view orders')) {
+        return 'To view your orders, log in and go to "My Account" > "Orders". You can see your order history and status there.';
+    }
+
+    // Delivery and Shipping
+    if (lower.includes('delivery') || lower.includes('ship') || lower.includes('when will') || lower.includes('arrive')) {
+        return 'Delivery typically takes 3-5 business days. You can track your order status in "My Account". For urgent deliveries, contact us at srivastavayush7542@gmail.com.';
+    }
+    if (lower.includes('delivery boy') || lower.includes('delivery person')) {
+        return 'Delivery is handled by our delivery team. You can view delivery persons in the Owner Dashboard if you are an owner.';
+    }
+
+    // Search and Products
+    if (lower.includes('search') || lower.includes('find product')) {
+        return 'Use the search bar in the navbar to find products by name. You can also browse by category on the Products page.';
+    }
+    if (lower.includes('categories') || lower.includes('types of products')) {
+        return 'We have various product categories. Browse them on the Products page or ask about specific categories like fruits, vegetables, etc.';
+    }
+
+    // Health and Suggestions
+    if (lower.includes('health') || lower.includes('healthy') || lower.includes('diet')) {
+        return 'For health suggestions, check the "Health Guide" page. Ask about specific products for organic and health benefits.';
+    }
+
+    // Owner and Admin Features
+    if (lower.includes('owner') || lower.includes('admin') || lower.includes('dashboard')) {
+        return 'Owners can log in via the Owner Login link. The dashboard allows managing products, orders, and delivery persons.';
+    }
+    if (lower.includes('add delivery') || lower.includes('delivery person')) {
+        return 'To add a delivery person, go to Owner Dashboard > Add Delivery Person. Fill in their details.';
+    }
+
+    // Contact and General
+    if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('call')) {
+        return 'Contact us at email: srivastavayush7542@gmail.com or phone: +91 6392923400. We are here to help!';
+    }
+    if (lower.includes('about') || lower.includes('store') || lower.includes('company')) {
+        return 'This is an organic product store focusing on natural, low-chemical items. We offer fresh products with delivery services.';
+    }
+    if (lower.includes('payment') || lower.includes('pay')) {
+        return 'Payments are handled during checkout. We accept standard payment methods. Delivery persons collect money on delivery.';
+    }
+
+    // Product-specific responses
+    if (product) {
+        const organicText = `${product.organic}`;
+        const detailText = `<strong>${product.name}</strong> is a ${product.category} item. ${product.desc}.`;
+        const priceText = `<strong>Price:</strong> ₹${product.price}.`;
+        const deliveryText = product.delivery;
+        const quantityText = product.quantity_help;
+        const related = findRelatedProducts(product);
+        const relatedText = related.length > 0 ? ` You may also like ${related.map(p => `<strong>${p.name}</strong>`).join(', ')} from the same category.` : '';
+
+        if (asksTime) {
+            return `${detailText} ${deliveryText}${relatedText}`;
+        }
+
+        if (asksPrice) {
+            return `${detailText} ${priceText} ${deliveryText}${relatedText}`;
+        }
+
+        if (asksQuantity) {
+            return `${detailText} ${quantityText} ${deliveryText}${relatedText}`;
+        }
+
+        if (wantsSuggestion) {
+            return `${detailText} ${priceText} ${organicText}${relatedText}`;
+        }
+
+        if (asksOrganic) {
+            return `<strong>${product.name}</strong> is treated as organic in this project because it is handled with low chemical exposure and natural-quality care. ${organicText}${relatedText}`;
+        }
+
+        if (asksUse) {
+            return `${detailText} ${organicText}${relatedText}`;
+        }
+
+        return `${detailText} ${priceText} ${organicText}${relatedText}`;
+    }
+
+    if (healthTip) {
+        return healthTip;
+    }
+
+    if (wantsSuggestion) {
+        return getGeneralSuggestions();
+    }
+
+    if (asksOrganic) {
+        return 'This project highlights organic-friendly products. Ask about a specific product name and I will explain how that product is described and why it is suitable for organic-focused customers.';
+    }
+
+    if (lower.includes('what products') || lower.includes('list products') || lower.includes('available')) {
+        return formatProductNames();
+    }
+
+    if (lower.includes('help') || lower.includes('how') || lower.includes('guide')) {
+        return 'I can help with registration, login, products, orders, delivery, and more. Try asking "How do I register?" or "What products do you have?"';
+    }
+
+    return 'I am here to help with anything related to this store. Try asking about products, orders, registration, or contact info. What would you like to know?';
+}
+
+availableProducts.innerHTML = formatProductNames();
+
+chatForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const question = chatInput.value.trim();
+    if (!question) {
+        return;
+    }
+
+    appendMessage(`<strong>You:</strong> ${question}`, 'user');
+    const answer = getBotResponse(question);
+    appendMessage(`<strong>Assistant:</strong> ${answer}`, 'bot');
+    chatInput.value = '';
+    chatInput.focus();
+});
+</script>
+{% endblock %}

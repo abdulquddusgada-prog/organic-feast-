@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Delivery Person</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Add a New Delivery Person</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="first_name" class="form-label">First Name:</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Phone Number:</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="city" class="form-label">City:</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+
+
+
+            <button type="submit" class="btn btn-primary">Add Delivery Person</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

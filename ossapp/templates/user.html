@@ -1,0 +1,90 @@
+{% extends "userbase.html" %}
+{% block page_title %}
+My Account
+{% endblock %}
+{% block user %}
+{% if msg %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{msg}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<!-- Extra Features for Logged-in Users -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-leaf"></i> Member Benefits</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Exclusive Discounts</strong> - 10% off on first purchase</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Free Shipping</strong> - On orders above ₹500</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Health Guide</strong> - Personalized recommendations</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Member Support</strong> - Priority customer service</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-info shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-star"></i> Wellness Tips</h6>
+            </div>
+            <div class="card-body">
+                <p class="small"><strong>Tip of the Day:</strong></p>
+                <p class="small text-muted">Start your day with a glass of warm lemon water mixed with turmeric. This ancient remedy helps boost immunity and improve digestion. Stay healthy! 🌿</p>
+                <a href="{% url 'suggestions' %}" class="btn btn-sm btn-outline-info">Get More Tips</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Information -->
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-user-circle"></i> Account Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold" width="30%"><i class="fas fa-user text-success"></i> Name</td>
+                            <td class="text-uppercase">{{customer.name}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-envelope text-success"></i> Email</td>
+                            <td>{{customer.emailaddress}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-map-marker-alt text-success"></i> Address</td>
+                            <td class="text-uppercase">{{customer.address}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-map-pin text-success"></i> Pincode</td>
+                            <td>{{customer.pincode}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-venus-mars text-success"></i> Gender</td>
+                            <td class="text-uppercase">{{customer.gender}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-calendar text-success"></i> Member Since</td>
+                            <td>{{customer.regdate|date:"d M, Y"}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold"><i class="fas fa-lock text-success"></i> Password</td>
+                            <td><a href="{% url 'changepass' %}" class="btn btn-sm btn-success"><i class="fas fa-edit"></i> Change Password</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

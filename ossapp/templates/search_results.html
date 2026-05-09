@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-success mb-4">Search Results</h2>
+
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="query" class="form-control" placeholder="Search products..." value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <select name="category" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="min_price" class="form-control" placeholder="Min Price" value="{{ min_price }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="max_price" class="form-control" placeholder="Max Price" value="{{ max_price }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    {% if products %}
+        <div class="row">
+            {% for product in products %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm border-success">
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-success">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.desc }}</p>
+                            <p class="card-text fw-bold">₹ {{ product.price }}</p>
+                            {% if product.avg_rating %}
+                                <p class="text-warning">⭐ {{ product.avg_rating|floatformat:1 }} ({{ product.review_count }} reviews)</p>
+                            {% endif %}
+
+                            <div class="mt-auto d-grid gap-2">
+                                {% if product.stock > 0 %}
+                                    <a href="/mycart?product_id={{ product.id }}&flag=add_to_cart" class="btn btn-success">Add to Cart</a>
+                                {% endif %}
+                                <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-success">Add to Wishlist</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <p class="lead">No products found matching your search criteria.</p>
+            <img src="https://media.wired.com/photos/607f51ffff921397ebfdb2f5/master/w_2560%2Cc_limit/web2_2021_04_09_IceCream_15284.jpg" height="300" width="300" alt="No results" class="img-fluid rounded">
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
